@@ -1,0 +1,282 @@
+QUESTION:
+
+Consider the following schema for a Library Database:
+BOOK(Book_id, Title, Publisher_Name, Pub_Year)
+BOOK_AUTHORS(Book_id, Author_Name)
+PUBLISHER(Name, Address, Phone)
+BOOK_COPIES(Book_id, Programme_id, No-of_Copies)
+BOOK_LENDING(Book_id, Programme_id, Card_No, Date_Out, Due_Date)
+LIBRARY_PROGRAMME(Programme_id, Programme_Name, Address)
+
+CREATING DATABASE
+mysql> CREATE DATABASE LIBRARY_5CSE1_B1;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> USE LIBRARY_5CSE1_B1;
+Database changed
+
+CREATING TABLES
+mysql> CREATE TABLE PUBLISHER(NAME VARCHAR(20) PRIMARY KEY,ADDRESS VARCHAR(60),PHONE INT);
+
+mysql> CREATE TABLE LIBRARY_PROGRAMME(PROGRAMME_ID INT PRIMARY KEY,PROGRAMME_NAME VARCHAR(30),ADDRESS VARCHAR(60));
+
+mysql> CREATE TABLE BOOK(BOOK_ID INT PRIMARY KEY,TITLE VARCHAR(30),PUBLISHER_NAME VARCHAR(30),PUB_YEAR INT,FOREIGN KEY(PUBLISHER_NAME) REFERENCES PUBLISHER(NAME) ON DELETE CASCADE);
+
+mysql> CREATE TABLE BOOK_AUTHORS(BOOK_ID INT PRIMARY KEY,AUTHOR_NAME VARCHAR(30),FOREIGN KEY(BOOK_ID) REFERENCES BOOK(BOOK_ID) ON DELETE CASCADE);
+
+mysql> CREATE TABLE BOOK_COPIES(BOOK_ID INT,PROGRAMME_ID INT,NO_OF_COPIES INT,FOREIGN KEY(BOOK_ID) REFERENCES BOOK(BOOK_ID) ON DELETE CASCADE,FOREIGN KEY(PROGRAMME_ID) REFERENCES LIBRARY_PROGRAMME(PROGRAMME_ID) ON DELETE CASCADE);
+
+mysql> CREATE TABLE BOOK_LENDING(BOOK_ID INT,PROGRAMME_ID INT,CARD_NO INT,DATE_OUT DATE,DUE_DATE DATE,PRIMARY KEY(BOOK_ID,PROGRAMME_ID,CARD_NO),FOREIGN KEY(BOOK_ID) REFERENCES BOOK(BOOK_ID)ON DELETE CASCADE,FOREIGN KEY(PROGRAMME_ID) REFERENCES LIBRARY_PROGRAMME(PROGRAMME_ID) ON DELETE CASCADE);
+
+DESCRIBING RELATIONS
+mysql> DESC PUBLISHER;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| NAME    | varchar(20) | NO   | PRI | NULL    |       |
+| ADDRESS | varchar(60) | YES  |     | NULL    |       |
+| PHONE   | int(11)     | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+
+mysql> DESC LIBRARY_PROGRAMME;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| PROGRAMME_ID   | int(11)     | NO   | PRI | NULL    |       |
+| PROGRAMME_NAME | varchar(30) | YES  |     | NULL    |       |
+| ADDRESS        | varchar(60) | YES  |     | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+
+mysql> DESC BOOK;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| BOOK_ID        | int(11)     | NO   | PRI | NULL    |       |
+| TITLE          | varchar(30) | YES  |     | NULL    |       |
+| PUBLISHER_NAME | varchar(30) | YES  | MUL | NULL    |       |
+| PUB_YEAR       | int(11)     | YES  |     | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+
+mysql> DESC BOOK_LENDING;
++--------------+---------+------+-----+---------+-------+
+| Field        | Type    | Null | Key | Default | Extra |
++--------------+---------+------+-----+---------+-------+
+| BOOK_ID      | int(11) | NO   | PRI | NULL    |       |
+| PROGRAMME_ID | int(11) | NO   | PRI | NULL    |       |
+| CARD_NO      | int(11) | NO   | PRI | NULL    |       |
+| DATE_OUT     | date    | YES  |     | NULL    |       |
+| DUE_DATE     | date    | YES  |     | NULL    |       |
++--------------+---------+------+-----+---------+-------+
+
+INSERTING VALUES
+mysql> INSERT INTO PUBLISHER VALUES('PEARSON','CHENNAI',813571243);
+
+mysql> INSERT INTO PUBLISHER VALUES('SBC','MANGALORE',994571312);
+
+mysql> INSERT INTO PUBLISHER VALUES('CELLO','MANGALORE',984501311);
+
+mysql> INSERT INTO PUBLISHER VALUES('MCGRAW','BANGALORE',813344556);
+
+mysql> INSERT INTO PUBLISHER VALUES('DC','KERELA',871350813);
+
+mysql> INSERT INTO LIBRARY_PROGRAMME VALUES(10,'P1','MANGALORE');
+
+mysql> INSERT INTO LIBRARY_PROGRAMME VALUES(11,'P2','CHENNAI');
+
+mysql> INSERT INTO LIBRARY_PROGRAMME VALUES(12,'P3','PUNE');
+
+mysql> INSERT INTO LIBRARY_PROGRAMME VALUES(13,'P4','BANGALORE');
+
+mysql> INSERT INTO LIBRARY_PROGRAMME VALUES(14,'P5','NEW DELHI');
+
+mysql> INSERT INTO BOOK VALUES(101,'DBMS','SBC',2016);
+
+mysql> INSERT INTO BOOK VALUES(102,'ADE','PEARSON',2016);
+
+mysql> INSERT INTO BOOK VALUES(103,'DS','PEARSON',2016);
+
+mysql> INSERT INTO BOOK VALUES(104,'NET','SBC',2016);
+
+mysql> INSERT INTO BOOK VALUES(105,'JAVA','SBC',2013);
+
+mysql> INSERT INTO BOOK_AUTHORS VALUES(101,'A1');
+
+mysql> INSERT INTO BOOK_AUTHORS VALUES(102,'A2');
+
+mysql> INSERT INTO BOOK_AUTHORS VALUES(103,'A3');
+
+mysql> INSERT INTO BOOK_AUTHORS VALUES(104,'A4');
+
+mysql> INSERT INTO BOOK_AUTHORS VALUES(105,'A5');
+
+mysql> INSERT INTO BOOK_COPIES VALUES(101,10,200);
+
+mysql> INSERT INTO BOOK_COPIES VALUES(102,10,200);
+
+mysql> INSERT INTO BOOK_COPIES VALUES(101,11,600);
+
+mysql> INSERT INTO BOOK_COPIES VALUES(103,12,700);
+
+mysql> INSERT INTO BOOK_COPIES VALUES(103,11,600);
+
+mysql> INSERT INTO BOOK_LENDING VALUES(101,10,1002,20170816,20170822);
+
+mysql> INSERT INTO BOOK_LENDING VALUES(101,11,1013,20170814,20170820);
+
+mysql> INSERT INTO BOOK_LENDING VALUES(102,10,1002,20170818,20170824);
+
+mysql> INSERT INTO BOOK_LENDING VALUES(103,12,1015,20170801,20170807);
+
+mysql> INSERT INTO BOOK_LENDING VALUES(104,13,1167,20170815,20170821);
+
+mysql> INSERT INTO BOOK_LENDING VALUES(105,12,1010,20170116,20170122);
+
+mysql> INSERT INTO BOOK_LENDING VALUES(103,13,1011,20170216,20170222);
+
+DISPLAYING RELATIONS
+mysql> SELECT * FROM LIBRARY_PROGRAMME;
++--------------+----------------+-----------+
+| PROGRAMME_ID | PROGRAMME_NAME | ADDRESS   |
++--------------+----------------+-----------+
+|           10 | P1             | MANGALORE |
+|           11 | P2             | CHENNAI   |
+|           12 | P3             | PUNE      |
+|           13 | P4             | BANGALORE |
+|           14 | P5             | NEW DELHI |
++--------------+----------------+-----------+
+
+mysql> SELECT * FROM BOOK;
++---------+-------+----------------+----------+
+| BOOK_ID | TITLE | PUBLISHER_NAME | PUB_YEAR |
++---------+-------+----------------+----------+
+|     101 | DBMS  | SBC            |     2016 |
+|     102 | ADE   | PEARSON        |     2016 |
+|     103 | DS    | PEARSON        |     2016 |
+|     104 | NET   | SBC            |     2016 |
+|     105 | JAVA  | SBC            |     2013 |
++---------+-------+----------------+----------+
+mysql> SELECT * FROM BOOK_AUTHORS;
++---------+-------------+
+| BOOK_ID | AUTHOR_NAME |
++---------+-------------+
+|     101 | A1          |
+|     102 | A2          |
+|     103 | A3          |
+|     104 | A4          |
+|     105 | A5          |
++---------+-------------+
+
+mysql> SELECT * FROM BOOK_COPIES;
++---------+--------------+--------------+
+| BOOK_ID | PROGRAMME_ID | NO_OF_COPIES |
++---------+--------------+--------------+
+|     101 |           10 |          200 |
+|     101 |           11 |          600 |
+|     102 |           10 |          200 |
+|     103 |           11 |          600 |
+|     103 |           12 |          700 |
++---------+--------------+--------------+
+
+mysql> SELECT * FROM BOOK_LENDING;
++---------+--------------+---------+------------+------------+
+| BOOK_ID | PROGRAMME_ID | CARD_NO | DATE_OUT   | DUE_DATE   |
++---------+--------------+---------+------------+------------+
+|     101 |           10 |    1002 | 2017-08-16 | 2017-08-22 |
+|     101 |           11 |    1013 | 2017-08-14 | 2017-08-20 |
+|     102 |           10 |    1002 | 2017-08-18 | 2017-08-24 |
+|     103 |           12 |    1015 | 2017-08-01 | 2017-08-07 |
+|     103 |           13 |    1011 | 2017-02-16 | 2017-02-22 |
+|     104 |           13 |    1167 | 2017-08-15 | 2017-08-21 |
+|     105 |           12 |    1010 | 2017-01-16 | 2017-01-22 |
++---------+--------------+---------+------------+------------+
+
+SQL QUERIES
+1. Retrieve details of all books in the library – id, title, name of publisher, authors,number of copies in each Programme, etc.
+
+mysql> SELECT BOOK.BOOK_ID,TITLE,PUBLISHER_NAME,AUTHOR_NAME,NO_OFCOPIES FROM BOOK,BOOK_AUTHOR,BOOK_COPIES WHERE BOOK.BOOK_ID=BOOK_AUTHOR.BOOK_ID AND BOOK.BOOK_ID=BOOK_COPIES.BOOK_ID;
++---------+-------+----------------+-------------+-------------+
+| BOOK_ID | TITLE | PUBLISHER_NAME | AUTHOR_NAME | NO_OFCOPIES |
++---------+-------+----------------+-------------+-------------+
+|     101 | DBMS  | SBC            | A1          |         200 |
+|     101 | DBMS  | SBC            | A1          |         500 |
+|     102 | ADE   | PEARSON        | A2          |         400 |
+|     103 | DS    | PEARSON        | A3          |         700 |
+|     103 | DS    | PEARSON        | A3          |         600 |
++---------+-------+----------------+-------------+-------------+
+
+2. Get the particulars of borrowers who have borrowed more than 3 books, but from Jan 2017 to Jun 2017.
+mysql> SELECT CARD_NO,COUNT(CARD_NO) FROM BOOK_LENDING WHERE DATE_OUT BETWEEN 20170101 AND 20170630  GROUP BY CARD_NO HAVING COUNT(CARD_NO)>=1;
++---------+----------------+
+| CARD_NO | COUNT(CARD_NO) |
++---------+----------------+
+|    1010 |              1 |
+|    1011 |              1 |
++---------+----------------+
+
+3. Delete a book in BOOK table. Update the contents of other tables to reflect this data manipulation operation.
+mysql> DELETE FROM BOOK WHERE BOOK_ID=105;
+mysql> SELECT * FROM BOOK;
++---------+-------+----------------+----------+
+| BOOK_ID | TITLE | PUBLISHER_NAME | PUB_YEAR |
++---------+-------+----------------+----------+
+|     101 | DBMS  | SBC            |     2016 |
+|     102 | ADE   | PEARSON        |     2016 |
+|     103 | DS    | PEARSON        |     2016 |
+|     104 | NET   | SBC            |     2016 |
++---------+-------+----------------+----------+
+
+4. Partition the BOOK table based on year of publication. Demonstrate its working with a simple query.
+mysql> CREATE TABLE BOOK_PARTITION(BOOK_ID INT,TITLE VARCHAR(20),PUBLISHER_NAME VARCHAR(40),PUB_YEAR INT,PRIMARY KEY(BOOK_ID,PUB_YEAR));
+
+mysql> INSERT INTO BOOK_PARTITION VALUES(101,'DBMS','SBC',2020);
+mysql> INSERT INTO BOOK_PARTITION VALUES(102,'ADE','PEARSON',2021);
+mysql> INSERT INTO BOOK_PARTITION VALUES(103,'DS','PEARSON',2019);
+mysql> INSERT INTO BOOK_PARTITION VALUES(104,'NET','SBC',2021);
+mysql> INSERT INTO BOOK_PARTITION VALUES(105,'JAVA','SBC',2024);
+mysql> ALTER TABLE BOOK_PARTITION PARTITION BY RANGE(PUB_YEAR)(PARTITION P1 VALUES LESS THAN(2020),PARTITION P2 VALUES LESS THAN(2023),PARTITION P3 VALUES LESS THAN(2025));
+
+mysql> SELECT * FROM BOOK_PARTITION;
++---------+-------+----------------+----------+
+| BOOK_ID | TITLE | PUBLISHER_NAME | PUB_YEAR |
++---------+-------+----------------+----------+
+|     103 | DS    | PEARSON        |     2019 |
+|     101 | DBMS  | SBC            |     2020 |
+|     102 | ADE   | PEARSON        |     2021 |
+|     104 | NET   | SBC            |     2021 |
+|     105 | JAVA  | SBC            |     2024 |
+
+mysql> SELECT * FROM BOOK_PARTITION PARTITION(P1);
++---------+-------+----------------+----------+
+| BOOK_ID | TITLE | PUBLISHER_NAME | PUB_YEAR |
++---------+-------+----------------+----------+
+|     103 | DS    | PEARSON        |     2019 |
++---------+-------+----------------+----------+
+
+mysql> SELECT * FROM BOOK_PARTITION PARTITION(P2);
++---------+-------+----------------+----------+
+| BOOK_ID | TITLE | PUBLISHER_NAME | PUB_YEAR |
++---------+-------+----------------+----------+
+|     101 | DBMS  | SBC            |     2020 |
+|     102 | ADE   | PEARSON        |     2021 |
+|     104 | NET   | SBC            |     2021 |
++---------+-------+----------------+----------+
+
+mysql> SELECT * FROM BOOK_PARTITION PARTITION(P3);
++---------+-------+----------------+----------+
+| BOOK_ID | TITLE | PUBLISHER_NAME | PUB_YEAR |
++---------+-------+----------------+----------+
+|     105 | JAVA  | SBC            |     2024 |
++---------+-------+----------------+----------+
+
+
+5. Create a view of all books and its number of copies that are currently available in the library.
+mysql> CREATE VIEW TOTAL_COPIES(BOOK_ID,TOTAL_NO_COPIES) AS SELECT BOOK_ID,SUM(NO_OFCOPIES) FROM BOOK_COPIES GROUP BY BOOK_ID;
+mysql> SELECT * FROM TOTAL_COPIES;
++---------+-----------------+
+| BOOK_ID | TOTAL_NO_COPIES |
++---------+-----------------+
+|     101 |             700 |
+|     102 |             400 |
+|     103 |            1300 |
++---------+-----------------+
+

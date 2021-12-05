@@ -1,0 +1,192 @@
+2. Consider the following schema for Order Database:
+  SALESMAN(Salesman_id, Name, City, Commission)
+  CUSTOMER(Customer_id, Cust_Name, City, Grade, Salesman_id)
+  ORDERS(Ord_No, Purchase_Amt, Ord_Date, Customer_id, Salesman_id)
+ 
+mysql> CREATE DATABASE 5CS1_B2_ORDER;
+mysql> USE 5CS1_B2_ORDER;
+
+CREATING TABLES
+mysql> CREATE TABLE SALESMAN(SALESMAN_ID INT PRIMARY KEY,NAME VARCHAR(30),CITY VARCHAR(20),COMMISSION INT);
+
+mysql> CREATE TABLE CUSTOMER(CUSTOMER_ID INT PRIMARY KEY,CUST_NAME VARCHAR(30),CITY VARCHAR(20),GRADE INT,SALESMAN_ID INT,FOREIGN KEY(SALESMAN_ID) REFERENCES SALESMAN(SALESMAN_ID) ON DELETE CASCADE ON UPDATE CASCADE);
+
+mysql> CREATE TABLE ORDERS(ORDER_NO INT PRIMARY KEY,PURCHASE_AMT INT,ORDER_DATE DATE,CUSTOMER_ID INT,SALESMAN_ID INT,FOREIGN KEY(SALESMAN_ID) REFERENCES SALESMAN(SALESMAN_ID) ON DELETE CASCADE ON UPDATE CASCADE,FOREIGN KEY(CUSTOMER_ID) REFERENCES CUSTOMER(CUSTOMER_ID) ON DELETE CASCADE ON UPDATE CASCADE);
+
+INSERTING VALUES
+mysql> INSERT INTO SALESMAN VALUES(1000,'JOHN','BANGALORE',2000);
+
+mysql> INSERT INTO SALESMAN VALUES(1001,'GEORGE','MANGALORE',1000);
+
+mysql> INSERT INTO SALESMAN VALUES(1002,'RAMESH','BANGALORE',800);
+
+mysql> INSERT INTO SALESMAN VALUES(1003,'RAMEZ','MANGALORE',1500);
+
+mysql> INSERT INTO SALESMAN VALUES(1004,'ALBERT','CHENNAI',800);
+
+mysql> INSERT INTO CUSTOMER VALUES(2000,'ANIL','MANGALORE',1,1000);
+
+mysql> INSERT INTO CUSTOMER VALUES(2001,'RAJ','BANGALORE',1,1000);
+
+mysql> INSERT INTO CUSTOMER VALUES(2002,'JOHN','BANGALORE',2,1004);
+
+mysql> INSERT INTO CUSTOMER VALUES(2003,'JOHN','BANGALORE',2,1000);
+
+mysql> INSERT INTO CUSTOMER VALUES(2004,'RAM','MANGALORE',2,1002);
+
+mysql> INSERT INTO ORDERS VALUES(101,7000,20170821,2002,1004);
+
+mysql> INSERT INTO ORDERS VALUES(102,3000,20170821,2001,1000);
+
+mysql> INSERT INTO ORDERS VALUES(105,8000,20170821,2000,1000);
+
+mysql> INSERT INTO ORDERS VALUES(108,9000,20170821,2000,1000);
+
+mysql> INSERT INTO ORDERS VALUES(111,5000,20170829,2000,1000);
+
+mysql> INSERT INTO ORDERS VALUES(121,5900,20170829,2003,1000);
+
+mysql> INSERT INTO ORDERS VALUES(221,5970,20170829,2004,1002);
+
+mysql> INSERT INTO ORDERS VALUES(991,5970,20171001,2002,1003);
+
+DISPLAYING RELATION
+mysql> SELECT * FROM SALESMAN;
++-------------+--------+-----------+------------+
+| SALESMAN_ID | NAME   | CITY      | COMMISSION |
++-------------+--------+-----------+------------+
+|        1000 | JOHN   | BANGALORE |       2000 |
+|        1001 | GEORGE | MANGALORE |       1000 |
+|        1002 | RAMESH | BANGALORE |        800 |
+|        1003 | RAMEZ  | MANGALORE |       1500 |
+|        1004 | ALBERT | CHENNAI   |        800 |
++-------------+--------+-----------+------------+
+
+mysql> SELECT * FROM ORDERS;
++----------+--------------+------------+-------------+-------------+
+| ORDER_NO | PURCHASE_AMT | ORDER_DATE | CUSTOMER_ID | SALESMAN_ID |
++----------+--------------+------------+-------------+-------------+
+|      101 |         7000 | 2017-08-21 |        2002 |        1004 |
+|      102 |         3000 | 2017-08-21 |        2001 |        1000 |
+|      105 |         8000 | 2017-08-21 |        2000 |        1000 |
+|      108 |         9000 | 2017-08-21 |        2000 |        1000 |
+|      111 |         5000 | 2017-08-29 |        2000 |        1000 |
+|      121 |         5900 | 2017-08-29 |        2003 |        1000 |
+|      221 |         5970 | 2017-08-29 |        2004 |        1002 |
+|      991 |         5970 | 2017-10-01 |        2002 |        1003 |
++----------+--------------+------------+-------------+-------------+
+
+Write SQL queries to
+1. Count the customers with grades above Bangalore’s average.
+mysql> SELECT COUNT(CUSTOMER_ID)FROM CUSTOMER WHERE GRADE> (SELECT AVG(GRADE) FROM CUSTOMER WHERE CITY='BANGALORE') AND CITY<>'BANGALORE';
++--------------------+
+| COUNT(CUSTOMER_ID) |
++--------------------+
+|                  1 |
++--------------------+
+
+2. Find the name and numbers of all salesman who had more than one customer.
+mysql> SELECT SALESMAN.NAME,SALESMAN.SALESMAN_ID FROM SALESMAN,CUSTOMER WHERE SALESMAN.SALESMAN_ID=CUSTOMER.SALESMAN_ID GROUP BY SALESMAN_ID HAVING COUNT(CUSTOMER_ID)>1;
++------+-------------+
+| NAME | SALESMAN_ID |
++------+-------------+
+| JOHN |        1000 |
++------+-------------+
+
+3. List all the salesman and indicate those who have and don’t have customers in their cities (Use UNION operation.)
+mysql> (SELECT SALESMAN.SALESMAN_ID FROM SALESMAN,CUSTOMER WHERE SALESMAN.SALESMAN_ID=CUSTOMER.SALESMAN_ID AND SALESMAN.CITY=CUSTOMER.CITY) UNION ( SELECT SALESMAN.SALESMAN_ID FROM SALESMAN,CUSTOMER WHERE SALESMAN.SALESMAN_ID=CUSTOMER.SALESMAN_ID AND SALESMAN.CITY<>CUSTOMER.CITY);
+| SALESMAN_ID |
++-------------+
+|        1000 |
+|        1004 |
+|        1002 |
++-------------+
+
+4. Create a view that finds the salesman who has the customer with the highest order of a day.
+mysql> CREATE VIEW HIGHESTORDER AS (SELECT SALESMAN.SALESMAN_ID,NAME,SALESMAN.CITY FROM SALESMAN,CUSTOMER WHERE SALESMAN.SALESMAN_ID=CUSTOMER.SALESMAN_ID AND CUSTOMER_ID IN ( SELECT CUSTOMER_ID FROM ORDERS GROUP BY CUSTOMER_ID,ORDER_DATE HAVING SUM(PURCHASE_AMT)=( SELECT MAX(PUR_AMT) FROM (SELECT SUM(PURCHASE_AMT)PUR_AMT,CUSTOMER_ID,ORDER_DATE FROM ORDERS GROUP BY CUSTOMER_ID,ORDER_DATE) AS PUR_AMT )));
+
+mysql> SELECT * FROM HIGHESTORDER;
++-------------+------+-----------+
+| SALESMAN_ID | NAME | CITY      |
++-------------+------+-----------+
+|        1000 | JOHN | BANGALORE |
++-------------+------+-----------+
+
+5. Demonstrate the DELETE operation by removing salesman with id 1000. All his orders must also be deleted.
+mysql> DELETE FROM SALESMAN WHERE SALESMAN_ID=1000;
+
+mysql> SELECT * FROM SALESMAN;
++-------------+--------+-----------+------------+
+| SALESMAN_ID | NAME   | CITY      | COMMISSION |
++-------------+--------+-----------+------------+
+|        1001 | GEORGE | MANGALORE |       1000 |
+|        1002 | RAMESH | BANGALORE |        800 |
+|        1003 | RAMEZ  | MANGALORE |       1500 |
+|        1004 | ALBERT | CHENNAI   |        800 |
++-------------+--------+-----------+------------+
+
+mysql> SELECT * FROM CUSTOMER;
++-------------+-----------+-----------+-------+-------------+
+| CUSTOMER_ID | CUST_NAME | CITY      | GRADE | SALESMAN_ID |
++-------------+-----------+-----------+-------+-------------+
+|        2002 | JOHN      | BANGALORE |     2 |        1004 |
+|        2004 | RAM       | MANGALORE |     2 |        1002 |
++-------------+-----------+-----------+-------+-------------+
+
+mysql> SELECT * FROM ORDERS;
++----------+--------------+------------+-------------+-------------+
+| ORDER_NO | PURCHASE_AMT | ORDER_DATE | CUSTOMER_ID | SALESMAN_ID |
++----------+--------------+------------+-------------+-------------+
+|      101 |         7000 | 2017-08-21 |        2002 |        1004 |
+|      221 |         5970 | 2017-08-29 |        2004 |        1002 |
+|      991 |         5970 | 2017-10-01 |        2002 |        1003 |
++----------+--------------+------------+-------------+-------------+
+
+6.write a query to find the average of grade
+mysql> SELECT AVG(GRADE) FROM CUSTOMER WHERE CITY='BANGALORE';
++------------+
+| AVG(GRADE) |
++------------+
+|     1.6667 |
++------------+
+
+7.write a query to retrieve the salesman_id where the salesman and the customer belongs to the same city.
+mysql> SELECT SALESMAN.SALESMAN_ID,CUSTOMER.CUSTOMER_ID FROM SALESMAN,CUSTOMER WHERE SALESMAN.SALESMAN_ID=CUSTOMER.SALESMAN_ID AND SALESMAN.CITY=CUSTOMER.CITY;
++-------------+-------------+
+| SALESMAN_ID | CUSTOMER_ID |
++-------------+-------------+
+|        1000 |        2001 |
+|        1000 |        2003 |
++-------------+-------------+
+
+7.write a query to retrieve the salesman_id where the salesman and the customer does not belong to the same city.
+mysql> SELECT SALESMAN.SALESMAN_ID,CUSTOMER.CUSTOMER_ID FROM SALESMAN,CUSTOMER WHERE SALESMAN.SALESMAN_ID=CUSTOMER.SALESMAN_ID AND SALESMAN.CITY<>CUSTOMER.CITY;
++-------------+-------------+
+| SALESMAN_ID | CUSTOMER_ID |
++-------------+-------------+
+|        1000 |        2000 |
+|        1004 |        2002 |
+|        1002 |        2004 |
++-------------+-------------+
+
+8.write a query to find the total purchase amount of each customer
+mysql> SELECT SUM(PURCHASE_AMT),CUSTOMER_ID,ORDER_DATE FROM ORDERS GROUP BY CUSTOMER_ID,ORDER_DATE;
++-------------------+-------------+------------+
+| SUM(PURCHASE_AMT) | CUSTOMER_ID | ORDER_DATE |
++-------------------+-------------+------------+
+|             17000 |        2000 | 2017-08-21 |
+|              5000 |        2000 | 2017-08-29 |
+|              3000 |        2001 | 2017-08-21 |
+|              7000 |        2002 | 2017-08-21 |
+|              5970 |        2002 | 2017-10-01 |
+|              5900 |        2003 | 2017-08-29 |
+|              5970 |        2004 | 2017-08-29 |
++-------------------+-------------+------------+
+
+8.write a query to find the maximum total purchased amount 
+mysql> SELECT MAX(PUR_AMT) FROM (SELECT SUM(PURCHASE_AMT)PUR_AMT,CUSTOMER_ID,ORDER_DATE FROM ORDERS GROUP BY CUSTOMER_ID,ORDER_DATE) AS PUR_AMT;
++--------------+
+| MAX(PUR_AMT) |
++--------------+
+|        17000 |
++--------------+

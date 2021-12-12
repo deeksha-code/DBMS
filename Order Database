@@ -111,6 +111,16 @@ mysql> SELECT * FROM HIGHESTORDER;
 +-------------+------+-----------+
 |        1000 | JOHN | BANGALORE |
 +-------------+------+-----------+
+                                              OR
+mysql> CREATE VIEW HIGHER_ORDER1(SALESMAN_ID) AS SELECT SALESMAN_ID FROM CUSTOMER WHERE CUSTOMER_ID =(SELECT CUSTOMER_ID FROM ORDERS GROUP BY CUSTOMER_ID,ORDER_DATE ORDER BY  SUM(PURCHASE_AMT) DESC LIMIT 1);
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> SELECT * FROM HIGHER_ORDER1;
++-------------+
+| SALESMAN_ID |
++-------------+
+|        1000 |
++-------------+
 
 5. Demonstrate the DELETE operation by removing salesman with id 1000. All his orders must also be deleted.
 mysql> DELETE FROM SALESMAN WHERE SALESMAN_ID=1000;
@@ -159,7 +169,7 @@ mysql> SELECT SALESMAN.SALESMAN_ID,CUSTOMER.CUSTOMER_ID FROM SALESMAN,CUSTOMER W
 |        1000 |        2003 |
 +-------------+-------------+
 
-7.write a query to retrieve the salesman_id where the salesman and the customer does not belong to the same city.
+8.write a query to retrieve the salesman_id where the salesman and the customer does not belong to the same city.
 mysql> SELECT SALESMAN.SALESMAN_ID,CUSTOMER.CUSTOMER_ID FROM SALESMAN,CUSTOMER WHERE SALESMAN.SALESMAN_ID=CUSTOMER.SALESMAN_ID AND SALESMAN.CITY<>CUSTOMER.CITY;
 +-------------+-------------+
 | SALESMAN_ID | CUSTOMER_ID |
@@ -169,7 +179,7 @@ mysql> SELECT SALESMAN.SALESMAN_ID,CUSTOMER.CUSTOMER_ID FROM SALESMAN,CUSTOMER W
 |        1002 |        2004 |
 +-------------+-------------+
 
-8.write a query to find the total purchase amount of each customer
+9.write a query to find the total purchase amount of each customer
 mysql> SELECT SUM(PURCHASE_AMT),CUSTOMER_ID,ORDER_DATE FROM ORDERS GROUP BY CUSTOMER_ID,ORDER_DATE;
 +-------------------+-------------+------------+
 | SUM(PURCHASE_AMT) | CUSTOMER_ID | ORDER_DATE |
@@ -183,7 +193,7 @@ mysql> SELECT SUM(PURCHASE_AMT),CUSTOMER_ID,ORDER_DATE FROM ORDERS GROUP BY CUST
 |              5970 |        2004 | 2017-08-29 |
 +-------------------+-------------+------------+
 
-8.write a query to find the maximum total purchased amount 
+10.write a query to find the maximum total purchased amount 
 mysql> SELECT MAX(PUR_AMT) FROM (SELECT SUM(PURCHASE_AMT)PUR_AMT,CUSTOMER_ID,ORDER_DATE FROM ORDERS GROUP BY CUSTOMER_ID,ORDER_DATE) AS PUR_AMT;
 +--------------+
 | MAX(PUR_AMT) |

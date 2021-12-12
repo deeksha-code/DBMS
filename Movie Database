@@ -19,3 +19,201 @@ mysql> CREATE TABLE MOVIES(MOV_ID INT PRIMARY KEY,MOV_TITLE VARCHAR(50),MOV_YEAR
 mysql> CREATE TABLE MOVIE_CAST(ACT_ID INT ,MOV_ID INT,ROLE VARCHAR(50),PRIMARY KEY(ACT_ID,MOV_ID),FOREIGN KEY(ACT_ID) REFERENCES ACTOR(ACT_ID) ON DELETE CASCADE ON UPDATE CASCADE,FOREIGN KEY(MOV_ID) REFERENCES MOVIES(MOV_ID) ON DELETE CASCADE ON UPDATE CASCADE);
 
 mysql> CREATE TABLE RATING(MOV_ID INT PRIMARY KEY ,REV_STARS INT,FOREIGN KEY(MOV_ID) REFERENCES MOVIES(MOV_ID) ON DELETE CASCADE ON UPDATE CASCADE);
+
+DESCRIBING TABLES
+mysql> DESC ACTOR;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| ACT_ID     | int(11)     | NO   | PRI | NULL    |       |
+| ACT_NAME   | varchar(30) | YES  |     | NULL    |       |
+| ACT_GENDER | varchar(30) | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+
+mysql> DESC DIRECTOR;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| DIR_ID    | int(11)     | NO   | PRI | NULL    |       |
+| DIR_NAME  | varchar(30) | YES  |     | NULL    |       |
+| DIR_PHONE | bigint(20)  | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+
+mysql> DESC MOVIES;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| MOV_ID    | int(11)     | NO   | PRI | NULL    |       |
+| MOV_TITLE | varchar(50) | YES  |     | NULL    |       |
+| MOV_YEAR  | int(11)     | YES  |     | NULL    |       |
+| MOV_LANG  | varchar(30) | YES  |     | NULL    |       |
+| DIR_ID    | int(11)     | YES  | MUL | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+
+mysql> DESC MOVIE_CAST;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| ACT_ID | int(11)     | NO   | PRI | NULL    |       |
+| MOV_ID | int(11)     | NO   | PRI | NULL    |       |
+| ROLE   | varchar(30) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+
+mysql> DESC RATING;
++-----------+---------+------+-----+---------+-------+
+| Field     | Type    | Null | Key | Default | Extra |
++-----------+---------+------+-----+---------+-------+
+| MOV_ID    | int(11) | NO   | PRI | NULL    |       |
+| REV_STARS | int(11) | YES  |     | NULL    |       |
++-----------+---------+------+-----+---------+-------+
+INSERTING VALUES
+mysql> INSERT INTO ACTOR VALUES(1,'GANESH', 'M');
+mysql> INSERT INTO ACTOR VALUES(2,'SUDEEP', 'M');
+mysql> INSERT INTO ACTOR VALUES(3,'RADHIKA', 'F');
+mysql> INSERT INTO ACTOR VALUES(4,'RAKSHITHA', 'F');
+mysql> INSERT INTO ACTOR VALUES(5,'RAVICHANDRAN', 'M');
+
+mysql> INSERT INTO DIRECTOR VALUES(101,'DORAI BHAGVAN',9408767811);
+mysql> INSERT INTO DIRECTOR VALUES(102,'YOGARAJ BHAT',8971152184);
+mysql> INSERT INTO DIRECTOR VALUES(103,'SUDEEP',9353563484);
+mysql> INSERT INTO DIRECTOR VALUES(104,'RAVICHANDRAN',8762114382);
+mysql> INSERT INTO DIRECTOR VALUES(105,'DWARAKEESH',9900380155);
+mysql> INSERT INTO DIRECTOR VALUES(106,'HITCHCOCK',9353143619);
+
+mysql> INSERT INTO MOVIES VALUES(11,'M1',2008,'KANNADA',102);
+mysql> INSERT INTO MOVIES VALUES(12,'M2',2010,'KANNADA',103);
+mysql> INSERT INTO MOVIES VALUES(13,'M3',1990,'KANNADA',104);
+mysql> INSERT INTO MOVIES VALUES(14,'M4',2010,'KANNADA',105);
+mysql> INSERT INTO MOVIES VALUES(15,'M5',2012,'KANNADA',105);
+mysql> INSERT INTO MOVIES VALUES(16,'M6',1992,'KANNADA',104);
+mysql> INSERT INTO MOVIES VALUES(17,'M7',1990,'KANNADA',101);
+mysql> INSERT INTO MOVIES VALUES(18,'M8',2015,'ENGLISH',106);
+mysql> INSERT INTO MOVIES VALUES(19,'M9',2016,'KANNADA',101);
+mysql> INSERT INTO MOVIES VALUES(20,'M10',2018,'KANNADA',102);
+mysql> INSERT INTO MOVIES VALUES(21,'M11',2018,'KANNADA',103);
+
+mysql> INSERT INTO MOVIE_CAST VALUES(1,11,'HERO');
+mysql> INSERT INTO MOVIE_CAST VALUES(2,12,'HERO');
+mysql> INSERT INTO MOVIE_CAST VALUES(3,14,'HEROINE');
+mysql> INSERT INTO MOVIE_CAST VALUES(5,16,'HERO');
+mysql> INSERT INTO MOVIE_CAST VALUES(4,17,'HEROINE');
+mysql> INSERT INTO MOVIE_CAST VALUES(1,17,'HERO');
+mysql> INSERT INTO MOVIE_CAST VALUES(1,18,'HERO');
+mysql> INSERT INTO MOVIE_CAST VALUES(3,19,'HEROINE');
+mysql> INSERT INTO MOVIE_CAST VALUES(4,20,'HEROINE');
+mysql> INSERT INTO MOVIE_CAST VALUES(5,21,'HERO');
+
+mysql> INSERT INTO RATING VALUES(11,5);
+mysql> INSERT INTO RATING VALUES(12,4);
+mysql> INSERT INTO RATING VALUES(13,5);
+mysql> INSERT INTO RATING VALUES(14,4);
+mysql> INSERT INTO RATING VALUES(15,5);
+
+mysql> SELECT * FROM ACTOR;
++--------+--------------+------------+
+| ACT_ID | ACT_NAME     | ACT_GENDER |
++--------+--------------+------------+
+|      1 | GANESH       | M          |
+|      2 | SUDEEP       | M          |
+|      3 | RADHIKA      | F          |
+|      4 | RAKSHITHA    | F          |
+|      5 | RAVICHANDRAN | M          |
++--------+--------------+------------+
+
+mysql> SELECT * FROM DIRECTOR;
++--------+---------------+------------+
+| DIR_ID | DIR_NAME      | DIR_PHONE  |
++--------+---------------+------------+
+|    101 | DORAI BHAGVAN | 9408767811 |
+|    102 | YOGARAJ BHAT  | 8971152184 |
+|    103 | SUDEEP        | 9353563484 |
+|    104 | RAVICHANDRAN  | 8762114382 |
+|    105 | DWARAKEESH    | 9900380155 |
+|    106 | HITCHCOCK     | 9353143619 |
++--------+---------------+------------+
+
+mysql> SELECT * FROM MOVIES;
++--------+-----------+----------+----------+--------+
+| MOV_ID | MOV_TITLE | MOV_YEAR | MOV_LANG | DIR_ID |
++--------+-----------+----------+----------+--------+
+|     11 | M1        |     2008 | KANNADA  |    102 |
+|     12 | M2        |     2010 | KANNADA  |    103 |
+|     13 | M3        |     1990 | KANNADA  |    104 |
+|     14 | M4        |     2010 | KANNADA  |    105 |
+|     15 | M5        |     2012 | KANNADA  |    105 |
+|     16 | M6        |     1992 | KANNADA  |    104 |
+|     17 | M7        |     1990 | KANNADA  |    101 |
+|     18 | M8        |     2015 | ENGLISH  |    106 |
+|     19 | M9        |     2016 | KANNADA  |    101 |
+|     20 | M10       |     2018 | KANNADA  |    102 |
+|     21 | M11       |     2018 | KANNADA  |    103 |
++--------+-----------+----------+----------+--------+
+
+mysql> SELECT * FROM MOVIE_CAST;
++--------+--------+---------+
+| ACT_ID | MOV_ID | ROLE    |
++--------+--------+---------+
+|      1 |     11 | HERO    |
+|      1 |     17 | HERO    |
+|      1 |     18 | HERO    |
+|      2 |     12 | HERO    |
+|      3 |     14 | HEROINE |
+|      3 |     19 | HEROINE |
+|      4 |     17 | HEROINE |
+|      4 |     20 | HEROINE |
+|      5 |     16 | HERO    |
+|      5 |     21 | HERO    |
++--------+--------+---------+
+
+mysql> SELECT * FROM RATING;
++--------+-----------+
+| MOV_ID | REV_STARS |
++--------+-----------+
+|     11 |         5 |
+|     12 |         4 |
+|     13 |         5 |
+|     14 |         4 |
+|     15 |         5 |
++--------+-----------+
+
+SQL QUERIES:
+1.List the titles of all movies directes by 'HITCHCOCK'.
+mysql> SELECT MOV_ID,MOV_TITLE FROM DIRECTOR,MOVIES WHERE DIRECTOR.DIR_ID=MOVIES.DIR_ID AND DIR_NAME='HITCHCOCK';
++--------+-----------+
+| MOV_ID | MOV_TITLE |
++--------+-----------+
+|     18 | M8        |
++--------+-----------+
+                              OR
+mysql> SELECT MOV_ID,MOV_TITLE FROM MOVIES WHERE DIR_ID=(SELECT DIR_ID FROM DIRECTOR WHERE DIR_NAME='HITCHCOCK');
++--------+-----------+
+| MOV_ID | MOV_TITLE |
++--------+-----------+
+|     18 | M8        |
++--------+-----------+
+
+2.Write a sql query to find the movie name where one or more actors acted in two or more movies.
+mysql> SELECT MOV_TITLE FROM MOVIES,MOVIE_CAST WHERE MOVIES.MOV_ID=MOVIE_CAST.MOV_ID AND ACT_ID IN (SELECT ACT_ID FROM MOVIE_CAST GROUP BY ACT_ID HAVING COUNT(ACT_ID)>1);
++-----------+
+| MOV_TITLE |
++-----------+
+| M1        |
+| M7        |
+| M8        |
++-----------+
+
+3.Write a sql query to list all the actors who acted in a movie before 2000 and also in a movie after 2015.
+mysql> SELECT ACT_ID,ACT_NAME FROM ACTOR WHERE ACT_ID IN (SELECT ACT_ID FROM MOVIE_CAST,MOVIES WHERE MOVIES.MOV_ID=MOVIE_CAST.MOV_ID AND MOV_YEAR<2000
+OR  MOV_YEAR>2015);
++--------+--------------+
+| ACT_ID | ACT_NAME     |
++--------+--------------+
+|      5 | RAVICHANDRAN |
+|      1 | GANESH       |
+|      4 | RAKSHITHA    |
+|      2 | SUDEEP       |
+|      3 | RADHIKA      |
++--------+--------------+
+
+
+
